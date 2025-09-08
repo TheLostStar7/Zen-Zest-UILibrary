@@ -336,7 +336,7 @@ function Library:CreateWindow(options)
       local tl_size = texts:GetTextSize(tl_.Text,tl_.TextSize,tl_.Font,Vector2.new(math.huge,math.huge))
       f_10.Size = UDim2.new(.01,tl_size.X+5,0,9)
       local function updateSize()
-        local new = math.max(120,uillo.AbsoluteContentSize.Y+20)
+        local new = math.max(120,uillo.AbsoluteContentSize.Y+24)
         f_7.Size = UDim2.new(0,220,0,new)
       end
       uillo:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateSize)
