@@ -280,8 +280,7 @@ function Library:CreateWindow(options)
     end
     self.MinimizeKey = KeyCode(key)
   end
-  local sg = Create("Instance.new","ScreenGui",{Parent = game:GetService("CoreGui"),Name = "Zen Zest Library",IgnoreGuiInset = true,ZIndexBehavior = Enum.ZIndexBehavior.Sibling}) self.esg = sg
-  -- ((syn and syn.protect_gui(sg) or gethui and gethui()) or game:GetService("CoreGui"))
+  local sg = Create("Instance.new","ScreenGui",{Parent = ((syn and syn.protect_gui(sg) or gethui and gethui()) or game:GetService("CoreGui")),Name = "Zen Zest Library",IgnoreGuiInset = true,ZIndexBehavior = Enum.ZIndexBehavior.Sibling}) self.esg = sg
   local f = Create("Instance.new","Frame",{Parent = sg,Size = UDim2.new(0,480,0,400),Position = UDim2.new(0,(workspace.CurrentCamera.ViewportSize.X-480)/2,0,(workspace.CurrentCamera.ViewportSize.Y-400)/2),BackgroundColor3 = Color3.fromRGB(20,20,20),BorderSizePixel = 0}) self.ef = f
   local f_ = Create("Instance.new","Frame",{Parent = f,Size = UDim2.new(1,-2,1,-2),Position = UDim2.new(0,1,0,1),BackgroundColor3 = Color3.fromRGB(60,60,60),BorderSizePixel = 0})
   local f_0 = Create("Instance.new","Frame",{Parent = f_,Size = UDim2.new(1,-2,1,-2),Position = UDim2.new(0,1,0,1),BackgroundColor3 = Color3.fromRGB(0,0,0),BorderSizePixel = 0})
