@@ -13,7 +13,7 @@ Adding A DownDrop.
 
 ## Loadstring.
 ```lua
-local ZenZest = loadstring(game:HttpGet(('https://github.com/TheLostStar7/Zen-Zest-UILibrary/blob/main/ZenZestLib')))()
+local ZenZest = loadstring(game:HttpGet(('https://raw.githubusercontent.com/TheLostStar7/Zen-Zest-UILibrary/refs/heads/main/ZenZestLib')))()
 --[[
 Loads The UI Library/UI Lib
 ]]
