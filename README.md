@@ -63,14 +63,15 @@ Init Waits For The Things Such As The Icons To Load Before Showing The UILibrary
 ## Window.
 ```lua
 local win = ZenZest:CreateWindow({
-  Title = "Zen Zest UI Library | "..game.Players.LocalPlayer.Name, -- default "Zen Zest UI Library"
-    Minimize_Settings = {
-      Keybind = "Z" -- default Z
-    },
-    Theme_Settings = {
-      Theme = "bloom" -- default Red
+    Title = "Zen Zest UI Library | "..game.Players.LocalPlayer.Name,
+    Settings = {
+        Minimize_Settings = {
+            Keybind = "Z"
+        },
+        Theme_Settings = {
+            Theme = "bloom"  -- Themes: "Bloom", "Red", "Orange".
+        }
     }
-  }
 })
 --[[
 Title = <string> - The Name Of The UI.
