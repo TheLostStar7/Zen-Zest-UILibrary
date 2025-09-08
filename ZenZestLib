@@ -1,0 +1,526 @@
+if not game:IsLoaded() then game.Loaded:Wait() end
+local Library = {
+  Utility = {
+    Flags = {
+      Buttons = {},
+      Toggles = {},
+      Input = {},
+      Dropdown = {},
+      Sliders = {}
+    },
+    IconModules = {},
+    
+  },
+  Elements = {
+    Tabs = {
+      Active = nil,
+      List = {}
+    },
+    GroupHolders = {
+      Children = {}
+    },
+    Buttons = {
+      Callback = {},
+      Path = {}
+    }
+  },
+  Data = {
+    CurrentTheme = nil
+  },
+  Events = {}
+}
+local uis,ts,rs,httpservice,texts = game:GetService("UserInputService"),game:GetService("TweenService"),game:GetService("RunService"),game:GetService("HttpService"),game:GetService("TextService")
+local ok,res = pcall(function() local module = {} module.Material = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nebula-Softworks/Nebula-Icon-Library/master/MaterialIcons.luau"))() module.Lucide = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nebula-Softworks/Nebula-Icon-Library/master/LucideIcons.luau"))() module.Phosphor = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nebula-Softworks/Nebula-Icon-Library/refs/heads/master/Phosphor.luau"))() module["Phosphor-Filled"] = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nebula-Softworks/Nebula-Icon-Library/refs/heads/master/Phosphor%20Filled.luau"))() module.SF = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nebula-Softworks/Nebula-Icon-Library/refs/heads/master/SFSymbols.luau"))() Library.Utility.IconModules = module end)
+function Library.Utility:Icon(...)
+  local args = {...}
+  local name,lib = args[1],args[2]
+  if name then
+    if lib then
+      return self.IconModules and self.IconModules[lib] and self.IconModules[lib][name]
+    end
+    for _,v in pairs(self.IconModules or {}) do
+      if v[name] then return v[name] end
+    end
+  else
+    for k,v in pairs(self.IconModules or {}) do
+      print(v)
+      for k_,v_ in pairs(v) do
+        print(k_,"→",v_)
+        task.wait(.5)
+      end
+    end
+  end
+end
+function Library.Utility:Icons_List(...)
+  local args = {...}
+  local lib = args[1]
+  local result = {}
+  if lib then
+    for k,v in pairs(self.IconModules and self.IconModules[lib] or {}) do
+      result[k] = v
+    end
+  else
+    for k,v in pairs(self.IconModules or {}) do
+      for k_,v_ in pairs(v) do
+        result[k_] = v_
+      end
+    end
+  end
+  return result
+end
+function Library.Utility:AddIconPack(...)
+  local args = {...}
+  local name,icons = args[1],args[2]
+  if name and type(icons) == "table" then
+    self.IconModules[name] = icons
+  end
+end
+function Create(...) local args = {...} local obj if args[1] == "Instance.new" then obj = Instance.new(args[2]) elseif args[1] == "Drawing.new" then obj = Drawing.new(args[2]) end if not obj then return nil end for i,v in pairs(args[3] or {}) do pcall(function() obj[i] = v end) end return obj end
+function Library.Utility:TweenObject(...) local args = {...} local twn = ts:Create(args[1],TweenInfo.new(args[2] or .5,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),args[3]) twn:Play() if args[#args] == true then twn.Completed:Wait() end end
+Library.Events = {}
+function Library:Connect(...)
+  local args = {...}
+  local name,callback = args[1],args[2]
+  if not self.Events[name] then
+    self.Events[name] = {}
+  end
+  table.insert(self.Events[name],callback)
+end
+function Library:Fire(...)
+  local args = {...}
+  local name,callback = args[1],args[2]
+  if self.Events[name] then
+    for _,cb in pairs(self.Events[name]) do
+      pcall(cb,callback)
+    end
+  end
+end
+local Themes = {
+  Bloom = {
+    Main = Color3.fromRGB(245,50,120)
+  },
+  Orange = {
+    Main = Color3.fromRGB(240,150,50)
+  },
+  Red = {
+    Main = Color3.fromRGB(201,43,67)
+  }
+}
+function Library.Utility:AddTheme(...)
+  local args = {...}
+  local name,table = args[1],args[2]
+  if name and type(table) == "table" then
+    Themes[name] = table
+  end
+end
+function Library.Utility:SetTheme(...)
+  local args = {...}
+  local theme = args[1]
+  if type(theme) == "string" and Themes[theme] then
+    Library.Data.CurrentTheme = Themes[theme]
+  elseif type(theme) == "table" then
+    Library.Data.CurrentTheme = theme
+  end
+  return Library.Data.CurrentTheme
+end
+function Library.Utility:GetThemes(...)
+  local args = {...}
+  if #args == 0 then
+    local results = {}
+    for k in pairs(Themes) do
+      table.insert(results,k)
+    end
+    return results
+  end
+  for _,v in pairs(args) do
+    if v == "Print" then
+      for k in pairs(Themes) do
+        print(k)
+      end
+    elseif v == "Return" then
+      local results = {}
+      for k in pairs(Themes) do
+        table.insert(results,k)
+      end
+      return results
+    elseif v == "Current" then
+      for k,v in pairs(Themes) do
+        if v == Library.Data.CurrentTheme then
+          return k
+        end
+      end
+      return nil
+    end
+  end
+end
+function Library:Init()
+  local success,err = pcall(function()
+    if not game:IsLoaded() then game.Loaded:Wait() end
+    local ok,res = pcall(function() local module = {} module.Material = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nebula-Softworks/Nebula-Icon-Library/master/MaterialIcons.luau"))() module.Lucide = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nebula-Softworks/Nebula-Icon-Library/master/LucideIcons.luau"))() module.Phosphor = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nebula-Softworks/Nebula-Icon-Library/refs/heads/master/Phosphor.luau"))() module["Phosphor-Filled"] = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nebula-Softworks/Nebula-Icon-Library/refs/heads/master/Phosphor%20Filled.luau"))() module.SF = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nebula-Softworks/Nebula-Icon-Library/refs/heads/master/SFSymbols.luau"))() Library.Utility.IconModules = module end)
+    if not ok then
+      warn("[Zen Zest Library] Failed to load Icon Modules:", res)
+    end
+    function Library.Utility:Icon(...)
+      local args = {...}
+      local name,lib = args[1],args[2]
+      if name then
+        if lib then
+          return self.IconModules and self.IconModules[lib] and self.IconModules[lib][name]
+        end
+        for _,v in pairs(self.IconModules or {}) do
+          if v[name] then return v[name] end
+        end
+      end
+    end
+    function Library.Utility:Icons_List(...)
+      local args = {...}
+      local lib = args[1]
+      local result = {}
+      if lib then
+        for k,v in pairs(self.IconModules and self.IconModules[lib] or {}) do
+          result[k] = v
+        end
+      else
+        for _,v in pairs(self.IconModules or {}) do
+          for k_,v_ in pairs(v) do
+            result[k_] = v_
+          end
+        end
+      end
+      return result
+    end
+    function Library.Utility:TweenObject(...)
+      local args = {...}
+      local twn = ts:Create(args[1],TweenInfo.new(args[2] or .5,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),args[3])
+      twn:Play()
+      if args[#args] == true then
+        twn.Completed:Wait()
+      end
+    end
+  end)
+  if success then
+    return true,"Ready!"
+  else
+    return false,"Failure: "..tostring(err)
+  end
+end
+function Library:CreateWindow(options)
+  function Theme_Matcher(...)
+    local args = {...}
+    local input = string.lower(args[1])
+    for k,v in pairs(Themes) do
+      if string.lower(k) == input then
+        return v
+      end
+    end
+    for k,v in pairs(Themes) do
+      if string.lower(k):find(input) then
+        return v
+      end
+    end
+    return Themes["Red"]
+  end
+  local theme = Theme_Matcher(options.Settings.Theme_Settings.Theme)
+  options.Settings.Theme_Settings.Theme,Library.Data.CurrentTheme = theme,theme
+  Library.Blacklist = {
+    Enum.KeyCode.Unknown,
+    Enum.KeyCode.W,
+    Enum.KeyCode.A,
+    Enum.KeyCode.S,
+    Enum.KeyCode.D,
+    Enum.KeyCode.Slash,
+    Enum.KeyCode.Tab,
+    Enum.KeyCode.Escape
+  }
+  Library.NumberKeys = {
+    Enum.KeyCode.Zero,
+    Enum.KeyCode.One,
+    Enum.KeyCode.Two,
+    Enum.KeyCode.Three,
+    Enum.KeyCode.Four,
+    Enum.KeyCode.Five,
+    Enum.KeyCode.Six,
+    Enum.KeyCode.Seven,
+    Enum.KeyCode.Eight,
+    Enum.KeyCode.Nine
+  }
+  Library.ShortKeys = {
+    [Enum.KeyCode.LeftControl] = "LCTRL",
+    [Enum.KeyCode.RightControl] = "RCTRL",
+    [Enum.KeyCode.LeftShift] = "LSHIFT",
+    [Enum.KeyCode.RightShift] = "RSHIFT",
+    [Enum.UserInputType.MouseButton1] = "MB1",
+    [Enum.UserInputType.MouseButton2] = "MB2",
+    [Enum.UserInputType.MouseButton3] = "MB3"
+  }
+  local function KeyCode(str)
+    for _,key in pairs(Enum.KeyCode:GetEnumItems()) do
+      if key.Name:lower() == tostring(str):lower() then
+        return key
+      end
+    end
+    return Enum.KeyCode.Z
+  end
+  Library.MinimizeKey = KeyCode(options.Settings.Minimize_Settings.Keybind or "Z")
+  uis.InputBegan:Connect(function(input,gp)
+    if gp then return end
+    if input.KeyCode == Library.MinimizeKey then
+      Library:Visible()
+    end
+  end)
+  function Library:GetKeybind()
+    return self.MinimizeKey
+  end
+  function Library:SetKeybind(arg)
+    local key = "Z"
+    if typeof(arg) == "string" then
+      key = arg
+    elseif typeof(arg) == "table" and arg.Keybind then
+      key = arg.Keybind
+    end
+    self.MinimizeKey = KeyCode(key)
+  end
+  local sg = Create("Instance.new","ScreenGui",{Parent = game:GetService("CoreGui"),Name = "Zen Zest Library",IgnoreGuiInset = true,ZIndexBehavior = Enum.ZIndexBehavior.Sibling}) self.esg = sg
+  -- ((syn and syn.protect_gui(sg) or gethui and gethui()) or game:GetService("CoreGui"))
+  local f = Create("Instance.new","Frame",{Parent = sg,Size = UDim2.new(0,480,0,400),Position = UDim2.new(0,(workspace.CurrentCamera.ViewportSize.X-480)/2,0,(workspace.CurrentCamera.ViewportSize.Y-400)/2),BackgroundColor3 = Color3.fromRGB(20,20,20),BorderSizePixel = 0}) self.ef = f
+  local f_ = Create("Instance.new","Frame",{Parent = f,Size = UDim2.new(1,-2,1,-2),Position = UDim2.new(0,1,0,1),BackgroundColor3 = Color3.fromRGB(60,60,60),BorderSizePixel = 0})
+  local f_0 = Create("Instance.new","Frame",{Parent = f_,Size = UDim2.new(1,-2,1,-2),Position = UDim2.new(0,1,0,1),BackgroundColor3 = Color3.fromRGB(0,0,0),BorderSizePixel = 0})
+  local f_1 = Create("Instance.new","Frame",{Parent = f_0,Size = UDim2.new(1,0,0,30),BackgroundColor3 = Color3.fromRGB(24,24,24),BorderSizePixel = 0})
+  local tl = Create("Instance.new","TextLabel",{Parent = f_1,Size = UDim2.new(1,-15,1,0),Position = UDim2.new(0,10,0,0),BackgroundTransparency = 1,Text = (options.Title and options.Title ~= "" and options.Title) or "Zen Zest UI Library",TextSize = 18,TextColor3 = Color3.fromRGB(255,255,255),RichText = true,Font = Enum.Font.Arimo,TextXAlignment = Enum.TextXAlignment.Left})
+  local f_2 = Create("Instance.new","Frame",{Parent = f_1,Size = UDim2.new(1,0,0,1),Position = UDim2.new(0,0,1,0),BackgroundColor3 = theme.Main,BorderSizePixel = 0})
+  local f_3 = Create("Instance.new","Frame",{Parent = f_0,Size = UDim2.new(1,-14,1,-43),Position = UDim2.new(0,7,0,38),BackgroundColor3 = Color3.fromRGB(24,24,24),BorderColor3 = Color3.fromRGB(30,30,30)})
+  local sf = Create("Instance.new","ScrollingFrame",{Parent = f_3,Size = UDim2.new(1,0,0,30),BackgroundTransparency = 1,AutomaticCanvasSize = Enum.AutomaticSize.X,CanvasSize = UDim2.new(0,0,0,0)})
+  Create("Instance.new","UIListLayout",{Parent = sf,Padding = UDim.new(0,5),FillDirection = Enum.FillDirection.Horizontal})
+  local d,ds,fs
+  f.InputBegan:Connect(function(i)
+    if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+      d = true
+      ds = i.Position
+      fs = f.Position
+      i.Changed:Connect(function()
+        if i.UserInputState == Enum.UserInputState.End then
+          d = false
+        end
+      end)
+    end
+  end)
+  uis.InputChanged:Connect(function(i)
+    if d and (i.UserInputType.Name == "MouseMovement" or i.UserInputType.Name == "Touch") then
+      Library.Utility:TweenObject(f,.2,{Position = UDim2.new(fs.X.Scale,fs.X.Offset+(i.Position.X-ds.X),fs.Y.Scale,fs.Y.Offset+(i.Position.Y-ds.Y))})
+    end
+  end)
+  function Library.Elements.Tabs:AddTab(...)
+    local args = {...}
+    local text = (typeof(args[1]) == "table" and args[1].Title) or (typeof(args[1]) == "string" and args[1] ~= "" and args[1]) or "Tab"
+    local tbtn = Create("Instance.new","TextButton",{Parent = sf,Size = UDim2.new(.2,0,1,0),BackgroundTransparency = 1,Text = text,TextSize = 18,TextColor3 = Color3.fromRGB(255,255,255),RichText = true,Font = Enum.Font.Arimo})
+    local tbtn_size = texts:GetTextSize(tbtn.Text,tbtn.TextSize,tbtn.Font,Vector2.new(math.huge,math.huge))
+    tbtn.Size = UDim2.new(0,tbtn_size.X+5,1,0)
+    local f_4 = Create("Instance.new","Frame",{Parent = f_3,Size = UDim2.new(1,0,1,-40),Position = UDim2.new(0,0,0,40),BackgroundTransparency = 1,Visible = false})
+    local f_5 = Create("Instance.new","ScrollingFrame",{Parent = f_4,Size = UDim2.new(.5,0,1,0),BackgroundTransparency = 1,CanvasSize = UDim2.new(0,0,0,0),AutomaticCanvasSize = Enum.AutomaticSize.Y,ScrollBarThickness = 0})
+    Create("Instance.new","UIListLayout",{Parent = f_5,Padding = UDim.new(0,10),HorizontalAlignment = Enum.HorizontalAlignment.Center})
+    local f_6 = Create("Instance.new","ScrollingFrame",{Parent = f_4,Size = UDim2.new(.5,0,1,0),Position = UDim2.new(.5,0,0,0),BackgroundTransparency = 1,CanvasSize = UDim2.new(0,0,0,0),AutomaticCanvasSize = Enum.AutomaticSize.Y,ScrollBarThickness = 0})
+    Create("Instance.new","UIListLayout",{Parent = f_6,Padding = UDim.new(0,10),HorizontalAlignment = Enum.HorizontalAlignment.Center})
+    local tab = {Button = tbtn,Frame = f_4,Left = f_5,Right = f_6,Counter = 0,GroupHolders = {}}
+    function tab:AddGroup(...)
+      local args_ = {...}
+      local text_ = (typeof(args_[1]) == "table" and args_[1].Title) or (typeof(args_[1]) == "string" and args_[1] ~= "" and args_[1]) or "Group"
+      self.Counter += 1
+      local selection = (typeof(args_[1]) == "table" and args_[1].Side and string.lower(args_[1].Side) == "left") and self.Left or (typeof(args_[1]) == "table" and args_[1].Side and string.lower(args_[1].Side) == "right") and self.Right or (self.Counter%2==1 and self.Left or self.Right)
+      local f_7 = Create("Instance.new","Frame",{Parent = selection,Size = UDim2.new(0,220,0,120),BackgroundColor3 = Color3.fromRGB(0,0,0),BorderSizePixel = 0})
+      local f_8 = Create("Instance.new","Frame",{Parent = f_7,Size = UDim2.new(1,-2,1,-2),Position = UDim2.new(0,1,0,1),BackgroundColor3 = Color3.fromRGB(54,54,54),BorderSizePixel = 0})
+      local f_9 = Create("Instance.new","Frame",{Parent = f_8,Size = UDim2.new(1,-2,1,-2),Position = UDim2.new(0,1,0,1),BackgroundColor3 = Color3.fromRGB(20,20,20),BorderSizePixel = 0})
+      local uillo = Create("Instance.new","UIListLayout",{Parent = f_9,Padding = UDim.new(0,2),SortOrder = Enum.SortOrder.LayoutOrder})
+      Create("Instance.new","UIPadding",{Parent = f_9,PaddingLeft = UDim.new(0,7),PaddingRight = UDim.new(0,7),PaddingTop = UDim.new(0,14),PaddingBottom = UDim.new(0,14)})
+      local f_10 = Create("Instance.new","Frame",{Parent = f_7,Size = UDim2.new(.06,0,0,9),Position = UDim2.new(.04,0,0,0),BackgroundColor3 = Color3.fromRGB(20,20,20),BorderSizePixel = 0})
+      local tl_ = Create("Instance.new","TextLabel",{Parent = f_10,Size = UDim2.new(1,0,1,0),BackgroundTransparency = 1,Text = text_,TextSize = 13,TextColor3 = Color3.fromRGB(255,255,255),RichText = true,Font = Enum.Font.Arimo,TextXAlignment = Enum.TextXAlignment.Left})
+      Create("Instance.new","UIPadding",{Parent = tl_,PaddingLeft = UDim.new(0,3)})
+      local tl_size = texts:GetTextSize(tl_.Text,tl_.TextSize,tl_.Font,Vector2.new(math.huge,math.huge))
+      f_10.Size = UDim2.new(.01,tl_size.X+5,0,9)
+      local function updateSize()
+        local new = math.max(120,uillo.AbsoluteContentSize.Y+20)
+        f_7.Size = UDim2.new(0,220,0,new)
+      end
+      uillo:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateSize)
+      updateSize()
+      local holder = {Frame_ = f_9,Buttons = {}}
+      function holder:AddButton(...)
+        local args = {...}
+        local text_0 = (typeof(args[1]) == "table" and args[1].Title) or (typeof(args[1]) == "string" and args[1] ~= "" and args[1]) or "Button"
+        local callback = (typeof(args[1]) == "table" and args[1].Callback) or args[2]
+        local flag = (typeof(args[1]) == "table" and args[1].Flag) or args[3] or (text_0.."Flag")
+        local f_11 = Create("Instance.new","Frame",{Parent = self.Frame_,Size = UDim2.new(1,0,0,22),BackgroundTransparency = 1})
+        local f_12 = Create("Instance.new","Frame",{Parent = f_11,Size = UDim2.new(1,0,1,0),BackgroundColor3 = Color3.fromRGB(54,54,54),BorderSizePixel = 0})
+        local f_13 = Create("Instance.new","Frame",{Parent = f_12,Size = UDim2.new(1,-2,1,-2),Position = UDim2.new(0,1,0,1),BackgroundColor3 = Color3.fromRGB(0,0,0),BorderSizePixel = 0})
+        local f_14 = Create("Instance.new","Frame",{Parent = f_13,Size = UDim2.new(1,-2,1,-2),Position = UDim2.new(0,1,0,1),BackgroundColor3 = Color3.fromRGB(40,40,40),BorderSizePixel = 0})
+        local tbtn_ = Create("Instance.new","TextButton",{Parent = f_14,Size = UDim2.new(1,0,1,0),BackgroundTransparency = 1,Text = text_0,TextSize = 16,TextColor3 = Color3.fromRGB(255,255,255),RichText = true,Font = Enum.Font.Arimo,TextXAlignment = Enum.TextXAlignment.Left})
+        Create("Instance.new","UIPadding",{Parent = tbtn_,PaddingLeft = UDim.new(0,3)})
+        self[flag:gsub("%s","_")] = tbtn_
+        table.insert(self.Buttons,{Title = text_0,Flag = flag,Instance = tbtn_})
+        local debounce = false
+        tbtn_.Activated:Connect(function()
+          if debounce then return end
+          debounce = true
+          if callback then pcall(callback) end
+          Library.Utility:TweenObject(tbtn_,0.25,{TextColor3 = theme.Main},true)
+          Library.Utility:TweenObject(tbtn_,0.25,{TextColor3 = Color3.fromRGB(255,255,255)},true)
+          task.delay(.25,function() debounce = false end)
+        end)
+        return tbtn_
+      end
+      function holder:AddToggle(...)
+        local args = {...}
+        local text_1 = (typeof(args[1]) == "table" and args[1].Title) or (typeof(args[1]) == "string" and args[1] ~= "" and args[1]) or "Toggle"
+        local callback_ = (typeof(args[1]) == "table" and args[1].Callback) or args[2]
+        local flag_ = (typeof(args[1]) == "table" and args[1].Flag) or args[3] or (text_1.."Flag")
+        local f_15 = Create("Instance.new","Frame",{Parent = self.Frame_,Size = UDim2.new(1,0,0,22),BackgroundTransparency = 1})
+        local f_16 = Create("Instance.new","Frame",{Parent = f_15,Size = UDim2.new(.11,0,1,0),BackgroundColor3 = Color3.fromRGB(54,54,54),BorderSizePixel = 0})
+        local f_17 = Create("Instance.new","Frame",{Parent = f_16,Size = UDim2.new(1,-2,1,-2),Position = UDim2.new(0,1,0,1),BackgroundColor3 = Color3.fromRGB(0,0,0),BorderSizePixel = 0})
+        local f_18 = Create("Instance.new","Frame",{Parent = f_17,Size = UDim2.new(1,-2,1,-2),Position = UDim2.new(0,1,0,1),BackgroundColor3 = Color3.fromRGB(40,40,40),BorderSizePixel = 0})
+        local tbtn_0 = Create("Instance.new","TextButton",{Parent = f_15,Size = UDim2.new(.98,0,1,0),Position = UDim2.new(.11,0,0,0),BackgroundTransparency = 1,Text = text_1,TextSize = 16,TextColor3 = Color3.fromRGB(255,255,255),RichText = true,Font = Enum.Font.Arimo,TextXAlignment = Enum.TextXAlignment.Left})
+        Create("Instance.new","UIPadding",{Parent = tbtn_0,PaddingLeft = UDim.new(0,3)})
+        self[flag_:gsub("%s","_")] = tbtn_0
+        table.insert(self.Buttons,{Title = text_1,Flag = flag_,Instance = tbtn_0})
+        local tgl = false
+        local function set(state)
+          tgl = state
+          if callback_ then
+            pcall(callback_,tgl)
+          end
+          if tgl then
+            Library.Utility:TweenObject(f_18,.1,{BackgroundColor3 = theme.Main})
+          else
+            Library.Utility:TweenObject(f_18,.1,{BackgroundColor3 = Color3.fromRGB(40,40,40)})
+          end
+        end
+        tbtn_0.Activated:Connect(function() set(not tgl) end)
+        return tbtn_0,set
+      end
+      function holder:AddSlider(...)
+        local args = {...}
+        local config = typeof(args[1]) == "table" and args[1] or {
+          Title = args[1] or "Slider",
+          Min = args[2] or 0,
+          Max = args[3] or 100,
+          Default = args[4] or args[2] or 0,
+          Callback = args[5],
+          Flag = args[6] or ((args[1] or "Slider").."Flag")
+        }
+        local f_19 = Create("Instance.new","Frame",{Parent = self.Frame_,Size = UDim2.new(1,0,0,35),BackgroundTransparency = 1})
+        local tl_0 = Create("Instance.new","TextLabel",{Parent = f_19,Size = UDim2.new(1,0,0,13),BackgroundTransparency = 1,Text = config.Title,TextSize = 14,TextColor3 = Color3.fromRGB(255,255,255),RichText = true,Font = Enum.Font.Arimo,TextXAlignment = Enum.TextXAlignment.Left})
+        local f_20 = Create("Instance.new","Frame",{Parent = f_19,Size = UDim2.new(1,0,1,-13),Position = UDim2.new(0,0,0,13),BackgroundColor3 = Color3.fromRGB(54,54,54),BorderSizePixel = 0})
+        local f_21 = Create("Instance.new","Frame",{Parent = f_20,Size = UDim2.new(1,-2,1,-2),Position = UDim2.new(0,1,0,1),BackgroundColor3 = Color3.fromRGB(0,0,0),BorderSizePixel = 0})
+        local f_22 = Create("Instance.new","Frame",{Parent = f_21,Size = UDim2.new(1,-2,1,-2),Position = UDim2.new(0,1,0,1),BackgroundColor3 = Color3.fromRGB(40,40,40),BorderSizePixel = 0})
+        local f_23 = Create("Instance.new","Frame",{Parent = f_22,Size = UDim2.new((config.Default-config.Min)/(config.Max-config.Min),0,1,0),BackgroundColor3 = theme.Main,BorderSizePixel = 0})
+        local tbtn_1 = Create("Instance.new","TextButton",{Parent = f_22,Size = UDim2.new(1,0,1,0),BackgroundTransparency = 1,Text = tostring(config.Default),TextSize = 16,TextColor3 = Color3.fromRGB(255,255,255),RichText = true,Font = Enum.Font.Arimo,TextXAlignment = Enum.TextXAlignment.Left})
+        Create("Instance.new","UIPadding",{Parent = tbtn_1,PaddingLeft = UDim.new(0,3)})
+        local value = config.Default
+        local dragging = false
+        local function update(v)
+          value = math.clamp(v,config.Min,config.Max)
+          local percent = (value-config.Min)/(config.Max-config.Min)
+          Library.Utility:TweenObject(f_23,.15,{Size = UDim2.new(percent,0,1,0)})
+          tbtn_1.Text = tostring(value)
+          if config.Callback then
+            pcall(config.Callback,value)
+          end
+        end
+        tbtn_1.InputBegan:Connect(function(input)
+          if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            update(math.floor(config.Min+((input.Position.X-f_22.AbsolutePosition.X)/f_22.AbsoluteSize.X)*(config.Max-config.Min)))
+          end
+        end)
+        uis.InputEnded:Connect(function(input)
+          if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+          end
+        end)
+        uis.InputChanged:Connect(function(input)
+          if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            update(math.floor(config.Min+((input.Position.X-f_22.AbsolutePosition.X)/f_22.AbsoluteSize.X)*(config.Max-config.Min)))
+          end
+        end)
+        update(config.Default)
+        self[config.Flag:gsub("%s","_")] = f_23
+        return {Frame = f_19,Fill = f_23,Button = tbtn_1,GetValue = function() return value end,SetValue = function(v) update(v) end}
+      end
+      function holder:AddLabel(...)
+        local args = {...}
+        local text = (typeof(args[1]) == "table" and args[1].Title) or (typeof(args[1]) == "string" and args[1]) or "Label"
+        local tl_1 = Create("Instance.new","TextLabel",{Parent = self.Frame_,Size = UDim2.new(1,0,0,22),BackgroundTransparency = 1,Text = text,TextSize = 16,TextColor3 = Color3.fromRGB(255,255,255),RichText = true,Font = Enum.Font.Arimo,TextXAlignment = Enum.TextXAlignment.Left})
+        Create("Instance.new","UIPadding",{Parent = tl_1,PaddingLeft = UDim.new(0,3)})
+        return {Label = tl_1,Get = function() return tl_1.Text end,Update = function(v) tl_1.Text = tostring(v) end}
+      end
+      function holder:AddInput(...)
+        local args = {...}
+        local options = {}
+        if typeof(args[1]) == "table" then
+          options.Title = args[1].Title or "Input"
+          options.Callback = args[1].Callback
+        else
+          options.Title = (typeof(args[1]) == "string" and args[1]) or "Input"
+          options.Callback = (typeof(args[2]) == "function" and args[2]) or nil
+        end
+        local f_24 = Create("Instance.new","Frame",{Parent = self.Frame_,Size = UDim2.new(1,0,0,22),BackgroundTransparency = 1})
+        local f_25 = Create("Instance.new","Frame",{Parent = f_24,Size = UDim2.new(.2,0,1,0),Position = UDim2.new(.8,0,0,0),BackgroundColor3 = Color3.fromRGB(54,54,54),BorderSizePixel = 0})
+        local f_26 = Create("Instance.new","Frame",{Parent = f_25,Size = UDim2.new(1,-2,1,-2),Position = UDim2.new(0,1,0,1),BackgroundColor3 = Color3.fromRGB(0,0,0),BorderSizePixel = 0})
+        local f_27 = Create("Instance.new","Frame",{Parent = f_26,Size = UDim2.new(1,-2,1,-2),Position = UDim2.new(0,1,0,1),BackgroundColor3 = Color3.fromRGB(40,40,40),BorderSizePixel = 0})
+        local tb = Create("Instance.new","TextBox",{Parent = f_27,Size = UDim2.new(1,0,1,0),BackgroundTransparency = 1,Text = "",TextSize = 12,TextColor3 = Color3.fromRGB(255,255,255),RichText = true,Font = Enum.Font.Arimo,ClipsDescendants = true,PlaceholderText = "...",ClearTextOnFocus = true})
+        local tl_2 = Create("Instance.new","TextLabel",{Parent = f_24,Size = UDim2.new(.8,0,1,0),BackgroundTransparency = 1,Text = text,TextSize = 16,TextColor3 = Color3.fromRGB(255,255,255),RichText = true,Font = Enum.Font.Arimo,TextXAlignment = Enum.TextXAlignment.Left})
+        local api = {}
+        function api:SetText(new) tb.Text = tostring(new) end
+        function api:GetText() return tb.Text end
+        if options.Callback then
+          tb.FocusLost:Connect(function()
+            options.Callback(tb.Text)
+          end)
+        end
+        return api
+      end
+      table.insert(self.GroupHolders,holder)
+      return holder
+    end
+    table.insert(self.List,tab)
+    tbtn.MouseButton1Click:Connect(function()
+      if self.Active == tbtn then return end
+      if self.Active then
+        for _,v in ipairs(self.List) do
+          if v.Button == self.Active then
+            v.Frame.Visible = false
+            if v.Button.TextColor3 ~= Color3.fromRGB(255,255,255) then
+              Library.Utility:TweenObject(v.Button,.1,{TextColor3 = Color3.fromRGB(255,255,255)})
+            end
+            break
+          end
+        end
+      end
+      self.Active = tbtn
+      f_4.Visible = true
+      Library.Utility:TweenObject(tbtn,.2,{TextColor3 = theme.Main})
+    end)
+    return tab
+  end
+  return Library.Elements.Tabs
+end
+function Library:Destroy()
+  if self.esg then
+    self.esg:Destroy()
+    self.esg = nil
+  end
+end
+function Library:Visible(...)
+  local args = {...}
+  local state = args[1] or nil
+  if self.ef then
+    self.ef.Visible = (state == nil and not self.ef.Visible) or state
+  end
+end
+return Library
+
+--[[
+Credits: The Lost Star / Sky | Solo Dev.
+----
+Current Plans:
+Make A Section.
+Make A Dropdwon.
+]]
