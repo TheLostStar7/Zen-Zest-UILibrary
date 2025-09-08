@@ -466,7 +466,7 @@ function Library:CreateWindow(options)
         local f_26 = Create("Instance.new","Frame",{Parent = f_25,Size = UDim2.new(1,-2,1,-2),Position = UDim2.new(0,1,0,1),BackgroundColor3 = Color3.fromRGB(0,0,0),BorderSizePixel = 0})
         local f_27 = Create("Instance.new","Frame",{Parent = f_26,Size = UDim2.new(1,-2,1,-2),Position = UDim2.new(0,1,0,1),BackgroundColor3 = Color3.fromRGB(40,40,40),BorderSizePixel = 0})
         local tb = Create("Instance.new","TextBox",{Parent = f_27,Size = UDim2.new(1,0,1,0),BackgroundTransparency = 1,Text = "",TextSize = 12,TextColor3 = Color3.fromRGB(255,255,255),RichText = true,Font = Enum.Font.Arimo,ClipsDescendants = true,PlaceholderText = "...",ClearTextOnFocus = true})
-        local tl_2 = Create("Instance.new","TextLabel",{Parent = f_24,Size = UDim2.new(.8,0,1,0),BackgroundTransparency = 1,Text = text,TextSize = 16,TextColor3 = Color3.fromRGB(255,255,255),RichText = true,Font = Enum.Font.Arimo,TextXAlignment = Enum.TextXAlignment.Left})
+        local tl_2 = Create("Instance.new","TextLabel",{Parent = f_24,Size = UDim2.new(.8,0,1,0),BackgroundTransparency = 1,Text = options.Title,TextSize = 16,TextColor3 = Color3.fromRGB(255,255,255),RichText = true,Font = Enum.Font.Arimo,TextXAlignment = Enum.TextXAlignment.Left})
         local api = {}
         function api:SetText(new) tb.Text = tostring(new) end
         function api:GetText() return tb.Text end
